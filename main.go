@@ -219,6 +219,7 @@ func main() {
 	}
 
 	if len(os.Args) == 1 {
+		auditPwd()
 		parser.WriteHelp(os.Stdout)
 		os.Exit(0)
 	}
@@ -246,6 +247,21 @@ func main() {
 	} else {
 		log.Infof("%d leaks detected. %d commits inspected in %s", len(leaks), totalCommits, durafmt.Parse(time.Now().Sub(now)).String())
 	}
+}
+
+// run gitleaks w/ just gitleaks
+func auditPwd() ([]Leak, error) {
+	pwd, err := os.Getwd()
+	fmt.Println("PWD: ", pwd)
+	if err != nil {
+		return nil, err
+	}
+	opts.RepoPath = pwd
+	repo, err := cloneRepo()
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 // run parses options and kicks off the audit
@@ -342,6 +358,7 @@ func cloneRepo() (*RepoDescriptor, error) {
 	var (
 		err  error
 		repo *git.Repository
+		name string
 	)
 	if opts.Disk {
 		log.Infof("cloning %s", opts.Repo)
@@ -359,7 +376,8 @@ func cloneRepo() (*RepoDescriptor, error) {
 			})
 		}
 	} else if opts.RepoPath != "" {
-		log.Infof("opening %s", opts.Repo)
+		name = filepath.Base(opts.RepoPath)
+		log.Infof("opening %s", name)
 		repo, err = git.PlainOpen(opts.RepoPath)
 	} else {
 		log.Infof("cloning %s", opts.Repo)
@@ -375,6 +393,7 @@ func cloneRepo() (*RepoDescriptor, error) {
 				Progress: os.Stdout,
 			})
 		}
+		name = filepath.Base(opts.Repo)
 	}
 	return &RepoDescriptor{
 		repository: repo,
