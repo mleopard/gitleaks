@@ -261,6 +261,12 @@ func auditPwd() ([]Leak, error) {
 	if err != nil {
 		return nil, err
 	}
+	ref, err := repo.repository.Head()
+	// TODO probably just shell this shit out
+
+	if err != nil {
+		return nil, err
+	}
 	return nil, nil
 }
 
