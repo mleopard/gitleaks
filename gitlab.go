@@ -6,8 +6,8 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/xanzy/go-gitlab"
-	"gopkg.in/src-d/go-git.v4"
+	gitlab "github.com/xanzy/go-gitlab"
+	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
@@ -36,24 +36,35 @@ func auditGitlabRepos() ([]Leak, error) {
 	}
 
 	for {
-		if opts.GitLabOrg != "" {
-			opt := &gitlab.ListGroupProjectsOptions{
-				ListOptions: gitlab.ListOptions{
-					PerPage: gitlabPages,
-					Page:    page,
-				},
-			}
-
-			ps, resp, err = cl.Groups.ListGroupProjects(opts.GitLabOrg, opt)
-		} else if opts.GitLabUser != "" {
+		if opts.GitLabURL != "" {
 			opt := &gitlab.ListProjectsOptions{
 				ListOptions: gitlab.ListOptions{
 					PerPage: gitlabPages,
 					Page:    page,
 				},
 			}
+			fmt.Println("Listing projects from " + opts.GitLabURL)
+			ps, resp, err = cl.Projects.ListProjects(opt)
+		} else {
+			if opts.GitLabOrg != "" {
+				opt := &gitlab.ListGroupProjectsOptions{
+					ListOptions: gitlab.ListOptions{
+						PerPage: gitlabPages,
+						Page:    page,
+					},
+				}
 
-			ps, resp, err = cl.Projects.ListUserProjects(opts.GitLabUser, opt)
+				ps, resp, err = cl.Groups.ListGroupProjects(opts.GitLabOrg, opt)
+			} else if opts.GitLabUser != "" {
+				opt := &gitlab.ListProjectsOptions{
+					ListOptions: gitlab.ListOptions{
+						PerPage: gitlabPages,
+						Page:    page,
+					},
+				}
+
+				ps, resp, err = cl.Projects.ListUserProjects(opts.GitLabUser, opt)
+			}
 		}
 
 		if err != nil {

@@ -31,9 +31,9 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/google/go-github/github"
 	"github.com/hako/durafmt"
-	"github.com/jessevdk/go-flags"
+	flags "github.com/jessevdk/go-flags"
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/src-d/go-git.v4"
+	git "gopkg.in/src-d/go-git.v4"
 )
 
 // Leak represents a leaked secret or regex match.
@@ -69,6 +69,7 @@ type Options struct {
 
 	GitLabUser string `long:"gitlab-user" description:"GitLab user ID to audit"`
 	GitLabOrg  string `long:"gitlab-org" description:"GitLab group ID to audit"`
+	GitLabURL  string `long:"gitlab-url" description:"GitLab url to audit"`
 
 	Commit string `short:"c" long:"commit" description:"sha of commit to stop at"`
 	Depth  int    `long:"depth" description:"maximum commit depth"`
@@ -333,7 +334,7 @@ func run() ([]Leak, error) {
 		if err != nil {
 			return leaks, err
 		}
-	} else if opts.GitLabOrg != "" || opts.GitLabUser != "" {
+	} else if opts.GitLabOrg != "" || opts.GitLabUser != "" || opts.GitLabURL != "" {
 		leaks, err = auditGitlabRepos()
 		if err != nil {
 			return leaks, err
