@@ -43,7 +43,7 @@ func auditGitlabRepos() ([]Leak, error) {
 					Page:    page,
 				},
 			}
-			fmt.Println("Listing projects from " + opts.GitLabURL)
+			log.Debugf("Retrieving %d projects from %s", gitlabPages*page, opts.GitLabURL)
 			ps, resp, err = cl.Projects.ListProjects(opt)
 		} else {
 			if opts.GitLabOrg != "" {
@@ -108,6 +108,10 @@ func auditGitlabRepos() ([]Leak, error) {
 			log.Infof("no leaks found for repo %s", p.Name)
 		} else {
 			log.Warnf("leaks found for repo %s", p.Name)
+		}
+
+		for i := range leaksFromRepo {
+			leaksFromRepo[i].Repo = p.WebURL
 		}
 
 		leaks = append(leaks, leaksFromRepo...)
