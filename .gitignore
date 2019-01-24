@@ -10,3 +10,12 @@
 *.out
 
 tmp
+
+gitleaks
+
+# Any reports generated
+*.json
+*.csv
+
+# Ignore build directory
+build/

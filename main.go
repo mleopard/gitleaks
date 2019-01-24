@@ -69,7 +69,7 @@ type Options struct {
 
 	GitLabUser string `long:"gitlab-user" description:"GitLab user ID to audit"`
 	GitLabOrg  string `long:"gitlab-org" description:"GitLab group ID to audit"`
-	GitLabURL  string `long:"gitlab-url" description:"GitLab url to audit"`
+	GitLabURL  string `long:"gitlab-url" description:"GitLab instance url to audit"`
 
 	Commit string `short:"c" long:"commit" description:"sha of commit to stop at"`
 	Depth  int    `long:"depth" description:"maximum commit depth"`
